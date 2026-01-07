@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Business Outreach Log</title>
+    <meta
+      name="description"
+      content="Log contacted businesses and keep a shared outreach record."
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container">
+        <h1>Business Outreach Log</h1>
+        <p>
+          Use this form to record each business you contact. All fields are optional,
+          but try to capture what you can.
+        </p>
+        <nav class="nav">
+          <a class="active" href="index.html">New Entry</a>
+          <a href="records.html">View Records</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="card">
+        <h2>Add a Business</h2>
+        <form id="outreach-form">
+          <div class="grid">
+            <label>
+              Business name
+              <input name="businessName" type="text" placeholder="Raven Coffee" />
+            </label>
+            <label>
+              Type of business
+              <input name="businessType" type="text" placeholder="Cafe, Salon, Gym" />
+            </label>
+            <label>
+              Email address
+              <input name="email" type="email" placeholder="owner@business.com" />
+            </label>
+            <label>
+              Phone number
+              <input name="phone" type="tel" placeholder="(555) 123-4567" />
+            </label>
+            <label class="full">
+              Address (Google Maps URL)
+              <input
+                name="addressUrl"
+                type="url"
+                placeholder="https://maps.google.com/?q=address"
+              />
+            </label>
+            <label>
+              Collaborator name
+              <input name="collaborator" type="text" placeholder="Alex" />
+            </label>
+          </div>
+          <div class="form-actions">
+            <button type="submit">Save Entry</button>
+            <a class="secondary" href="records.html">Go to Records</a>
+          </div>
+          <p id="form-message" class="message" aria-live="polite"></p>
+        </form>
+      </section>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+</html>
