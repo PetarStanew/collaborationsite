@@ -95,13 +95,18 @@ app.post("/api/entries", async (req, res) => {
   }
 });
 
+app.get("/health", (_req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
 initDb()
   .then(() => {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
+    console.log("Database ready");
   })
   .catch((error) => {
     console.error("Database init failed", error);
-    process.exit(1);
   });
