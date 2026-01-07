@@ -3,7 +3,7 @@ const path = require("path");
 const { Pool } = require("pg");
 
 const app = express();
-const PORT = process.env.PORT || process.env.RAILWAY_PORT || 8081;
+const PORT = process.env.PORT || 3000;
 
 if (!process.env.DATABASE_URL) {
   console.error("DATABASE_URL is not set.");
