@@ -25,8 +25,17 @@ const initDb = async () => {
       phone TEXT,
       address_url TEXT,
       collaborator TEXT,
+      service_option TEXT,
+      offer_status TEXT,
       created_at TIMESTAMPTZ DEFAULT NOW()
     );`
+  );
+
+  await pool.query(
+    "ALTER TABLE outreach_entries ADD COLUMN IF NOT EXISTS service_option TEXT;"
+  );
+  await pool.query(
+    "ALTER TABLE outreach_entries ADD COLUMN IF NOT EXISTS offer_status TEXT;"
   );
 };
 
@@ -36,7 +45,9 @@ app.use(express.static(path.join(__dirname)));
 app.get("/api/entries", async (_req, res) => {
   try {
     const { rows } = await pool.query(
-      "SELECT business_name, business_type, email, phone, address_url, collaborator, created_at FROM outreach_entries ORDER BY created_at DESC"
+      `SELECT id, business_name, business_type, email, phone, address_url, collaborator,
+      service_option, offer_status, created_at
+      FROM outreach_entries ORDER BY created_at DESC`
     );
     res.json(rows);
   } catch (error) {
@@ -51,7 +62,9 @@ app.post("/api/entries", async (req, res) => {
     email = "",
     phone = "",
     addressUrl = "",
-    collaborator = ""
+    collaborator = "",
+    serviceOption = "",
+    offerStatus = ""
   } = req.body || {};
 
   const hasData = [
@@ -60,7 +73,9 @@ app.post("/api/entries", async (req, res) => {
     email,
     phone,
     addressUrl,
-    collaborator
+    collaborator,
+    serviceOption,
+    offerStatus
   ].some((value) => String(value).trim().length > 0);
 
   if (!hasData) {
@@ -76,22 +91,99 @@ app.post("/api/entries", async (req, res) => {
         email,
         phone,
         address_url,
-        collaborator
-      ) VALUES ($1, $2, $3, $4, $5, $6)
-      RETURNING business_name, business_type, email, phone, address_url, collaborator, created_at`,
+        collaborator,
+        service_option,
+        offer_status
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      RETURNING id, business_name, business_type, email, phone, address_url, collaborator,
+      service_option, offer_status, created_at`,
       [
         businessName.trim(),
         businessType.trim(),
         email.trim(),
         phone.trim(),
         addressUrl.trim(),
-        collaborator.trim()
+        collaborator.trim(),
+        serviceOption.trim(),
+        offerStatus.trim()
       ]
     );
 
     res.status(201).json(rows[0]);
   } catch (error) {
     res.status(500).json({ error: "Failed to save entry." });
+  }
+});
+
+app.put("/api/entries/:id", async (req, res) => {
+  const entryId = Number.parseInt(req.params.id, 10);
+  if (Number.isNaN(entryId)) {
+    res.status(400).json({ error: "Invalid entry id." });
+    return;
+  }
+
+  const {
+    businessName = "",
+    businessType = "",
+    email = "",
+    phone = "",
+    addressUrl = "",
+    collaborator = "",
+    serviceOption = "",
+    offerStatus = ""
+  } = req.body || {};
+
+  const hasData = [
+    businessName,
+    businessType,
+    email,
+    phone,
+    addressUrl,
+    collaborator,
+    serviceOption,
+    offerStatus
+  ].some((value) => String(value).trim().length > 0);
+
+  if (!hasData) {
+    res.status(400).json({ error: "At least one field is required." });
+    return;
+  }
+
+  try {
+    const { rows } = await pool.query(
+      `UPDATE outreach_entries
+      SET business_name = $1,
+        business_type = $2,
+        email = $3,
+        phone = $4,
+        address_url = $5,
+        collaborator = $6,
+        service_option = $7,
+        offer_status = $8
+      WHERE id = $9
+      RETURNING id, business_name, business_type, email, phone, address_url, collaborator,
+      service_option, offer_status, created_at`,
+      [
+        businessName.trim(),
+        businessType.trim(),
+        email.trim(),
+        phone.trim(),
+        addressUrl.trim(),
+        collaborator.trim(),
+        serviceOption.trim(),
+        offerStatus.trim(),
+        entryId
+      ]
+    );
+
+    if (!rows.length) {
+      res.status(404).json({ error: "Entry not found." });
+      return;
+    }
+
+    res.status(200).json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to update entry." });
   }
 });
 

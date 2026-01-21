@@ -11,7 +11,8 @@ form.addEventListener("submit", (event) => {
     email: (formData.get("email") || "").trim(),
     phone: (formData.get("phone") || "").trim(),
     addressUrl: (formData.get("addressUrl") || "").trim(),
-    collaborator: (formData.get("collaborator") || "").trim()
+    collaborator: (formData.get("collaborator") || "").trim(),
+    serviceOption: (formData.get("serviceOption") || "").trim()
   };
 
   const hasData = Object.values(entry).some((value) => value.length > 0);
